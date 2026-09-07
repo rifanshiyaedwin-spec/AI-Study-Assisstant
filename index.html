@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Learning and Study Assistant - Personal Virtual Tutor</title>
+  
+  <!-- Modern Font & Markdown / KaTeX -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Marked.js for Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <div class="brand-icon">🎓</div>
+        <div>
+          <div class="brand-title">StudyAI Assistant</div>
+          <div class="brand-subtitle">Virtual Tutor & RAG</div>
+        </div>
+      </div>
+
+      <ul class="nav-menu">
+        <li>
+          <a class="nav-item active" data-tab="chat">
+            <span style="font-size: 16px;">💬</span>
+            <span>Study Chat & RAG</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="materials">
+            <span style="font-size: 16px;">📚</span>
+            <span>Course Materials</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="quiz">
+            <span style="font-size: 16px;">📝</span>
+            <span>AI Quiz Studio</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="flashcards">
+            <span style="font-size: 16px;">🃏</span>
+            <span>Flashcard Studio</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="planner">
+            <span style="font-size: 16px;">📅</span>
+            <span>Learning Planner</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="analytics">
+            <span style="font-size: 16px;">📊</span>
+            <span>Progress & Mastery</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-tab="settings">
+            <span style="font-size: 16px;">⚙️</span>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="student-card" onclick="switchTab('settings')">
+          <div class="student-avatar" id="profile-display-avatar">A</div>
+          <div class="student-info">
+            <div class="student-name" id="profile-display-name">Alex Chen</div>
+            <div class="student-status" id="profile-display-status">Undergraduate</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="page-title-box">
+          <div>
+            <h1 class="page-title" id="page-title">AI Study Chat & RAG Tutor</h1>
+            <p class="page-desc" id="page-desc">Ask questions, get grounded explanations with source citations.</p>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <!-- Pomodoro Study Timer -->
+          <div class="pomodoro-widget" title="Pomodoro Focus Timer">
+            <span id="pomodoro-mode-badge" style="font-size: 10px; font-weight: 700; color: var(--accent-secondary); background: rgba(59, 130, 246, 0.15); padding: 2px 6px; border-radius: 4px;">
+              FOCUS
+            </span>
+            <span class="pomodoro-time" id="pomodoro-display">25:00</span>
+            <button class="btn btn-primary btn-sm" id="pomodoro-toggle" style="padding: 2px 8px; font-size: 11px;">▶ Start</button>
+            <button class="btn btn-secondary btn-sm" id="pomodoro-reset" style="padding: 2px 6px; font-size: 11px;" title="Reset Timer">↺</button>
+          </div>
+
+          <button class="btn btn-secondary btn-sm" id="load-sample-btn" title="Instantly load and index Renewable Energy sample">
+            🚀 Load Sample
+          </button>
+          <button class="btn btn-secondary btn-sm" id="theme-toggle" title="Toggle Dark/Light Mode">
+            🌙
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB 1: STUDY CHAT & RAG TUTOR -->
+      <section class="tab-pane active" id="tab-chat">
+        <div class="chat-container">
+          <!-- Main Chat Panel -->
+          <div class="chat-main-area">
+            <!-- Toolbar -->
+            <div class="chat-toolbar">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">PERSONA:</span>
+                <div class="persona-selector">
+                  <button class="persona-btn active" data-persona="tutor">🎓 Tutor</button>
+                  <button class="persona-btn" data-persona="socratic">🤔 Socratic</button>
+                  <button class="persona-btn" data-persona="explainer">💡 Simple (ELI5)</button>
+                  <button class="persona-btn" data-persona="exam">📝 Exam Prep</button>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <select id="chat-material-filter" class="form-select" style="padding: 4px 10px; font-size: 12px; width: auto; max-width: 200px;">
+                  <option value="">All Course Materials</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" id="new-chat-btn" title="Start fresh session">
+                  + New Session
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages Stream -->
+            <div class="chat-messages" id="chat-messages">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Suggested Follow-up Prompt Pills -->
+            <div class="suggested-pills" id="chat-suggested-pills">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Input Box -->
+            <div class="chat-input-box">
+              <textarea id="chat-input" placeholder="Ask a question about your uploaded materials (e.g., 'Explain the working of a solar photovoltaic system')..." rows="1"></textarea>
+              <button class="btn btn-primary" id="chat-send-btn" style="padding: 0 20px;">
+                Send
+              </button>
+            </div>
+          </div>
+
+          <!-- Chat Right Context Sidebar -->
+          <div class="chat-context-panel">
+            <div class="context-box">
+              <div class="context-box-title">
+                <span>🧠</span> <span>Student Memory & Recall</span>
+              </div>
+              <div id="chat-memory-box">
+                <p style="font-size: 12px; color: var(--text-muted);">Loading memory facts...</p>
+              </div>
+            </div>
+
+            <div class="context-box">
+              <div class="context-box-title">
+                <span>⚡</span> <span>Quick Study Actions</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" style="text-align: left; justify-content: flex-start;" onclick="sendMessage('Give me a 5-question quiz from this topic.')">
+                  📝 Generate 5-Question Quiz
+                </button>
+                <button class="btn btn-secondary btn-sm" style="text-align: left; justify-content: flex-start;" onclick="sendMessage('What are the key formulas and exam traps I must remember?')">
+                  ⚠️ Review Exam Formulas & Traps
+                </button>
+                <button class="btn btn-secondary btn-sm" style="text-align: left; justify-content: flex-start;" onclick="sendMessage('Explain the difference between PWM and MPPT charge controllers.')">
+                  🔌 Explain PWM vs MPPT
+                </button>
+                <button class="btn btn-secondary btn-sm" style="text-align: left; justify-content: flex-start;" onclick="switchTab('planner')">
+                  📅 Open Study Schedule
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: COURSE MATERIALS -->
+      <section class="tab-pane" id="tab-materials">
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📤</span> <span>Upload New Course Material</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: center;">
+            <div class="dropzone" id="material-dropzone">
+              <div style="font-size: 36px; margin-bottom: 8px;">📄</div>
+              <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">Drag & Drop PDF, Notes, or Textbooks</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">Supports PDF, TXT, Markdown files</p>
+              <input type="file" id="material-file-input" accept=".pdf,.txt,.md" style="display: none;">
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label class="form-label">Subject / Course Name</label>
+                <input type="text" id="material-subject-input" class="form-input" placeholder="e.g. Clean Energy Engineering" value="Clean Energy Engineering">
+              </div>
+              <button class="btn btn-primary" style="width: 100%;" onclick="document.getElementById('material-file-input').click()">
+                Select File to Upload
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-header">
+          <div class="card-title">
+            <span>📚</span> <span>Indexed Course Materials Library</span>
+          </div>
+        </div>
+
+        <div class="materials-grid" id="materials-list">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 3: AI QUIZ STUDIO -->
+      <section class="tab-pane" id="tab-quiz">
+        <div class="quiz-builder">
+          <!-- Quiz Config Form -->
+          <div class="card" style="height: fit-content;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>⚙️</span> <span>Quiz Generator</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Topic / Concept</label>
+              <input type="text" id="quiz-topic-input" class="form-input" placeholder="e.g. Solar Photovoltaic Systems" value="Solar Photovoltaic Systems">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Scope from Course Material</label>
+              <select id="quiz-material-select" class="form-select">
+                <option value="">Auto-select from best match</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Difficulty Level</label>
+              <select id="quiz-difficulty-select" class="form-select">
+                <option value="beginner">Beginner (Foundational)</option>
+                <option value="intermediate" selected>Intermediate (Standard)</option>
+                <option value="advanced">Advanced (Exam Grade)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Number of Questions</label>
+              <select id="quiz-count-select" class="form-select">
+                <option value="3">3 Quick Questions</option>
+                <option value="5" selected>5 Standard Questions</option>
+                <option value="10">10 Comprehensive Exam Questions</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" id="generate-quiz-btn" style="width: 100%; margin-top: 8px;">
+              ⚡ Generate Quiz Now
+            </button>
+
+            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+              <h4 style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">
+                Past Quiz History
+              </h4>
+              <div id="quiz-history-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Quiz / Results Area -->
+          <div class="quiz-main-view">
+            <div id="quiz-questions-area">
+              <div class="card" style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 36px; margin-bottom: 12px;">🎯</div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Ready to Test Your Knowledge?</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                  Configure your topic on the left or select one of your uploaded course materials to generate an automated quiz.
+                </p>
+                <button class="btn btn-primary" onclick="document.getElementById('generate-quiz-btn').click()">
+                  ⚡ Generate Quick 5-Question Quiz on Solar PV
+                </button>
+              </div>
+            </div>
+
+            <div id="quiz-actions-box" style="display: none; justify-content: flex-end; margin-top: 16px;">
+              <button class="btn btn-primary" id="submit-quiz-btn" style="padding: 12px 24px;">
+                Submit Answers & Evaluate
+              </button>
+            </div>
+
+            <div id="quiz-results-area" style="display: none;">
+              <!-- Dynamically populated with score, evaluations, and explanations -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: FLASHCARD STUDIO -->
+      <section class="tab-pane" id="tab-flashcards">
+        <div style="display: grid; grid-template-columns: 340px 1fr; gap: 24px;">
+          <!-- Deck Generator & List -->
+          <div class="card" style="height: fit-content;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🃏</span> <span>Flashcard Studio</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Topic / Concept</label>
+              <input type="text" id="flashcard-topic-input" class="form-input" placeholder="e.g. Solar Photovoltaic Systems" value="Solar Photovoltaic Systems">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Scope from Material</label>
+              <select id="flashcard-material-select" class="form-select">
+                <option value="">Auto-select from best match</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Number of Cards</label>
+              <select id="flashcard-count-select" class="form-select">
+                <option value="5" selected>5 High-Yield Cards</option>
+                <option value="8">8 Comprehensive Cards</option>
+                <option value="10">10 Full Topic Deck</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" id="generate-flashcards-btn" style="width: 100%; margin-top: 6px;">
+              🃏 Generate Flashcard Deck
+            </button>
+
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+              <h4 style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">
+                Your Decks
+              </h4>
+              <div id="flashcard-decks-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Card Review Scene -->
+          <div>
+            <div id="flashcard-viewer-area">
+              <div class="card" style="text-align: center; padding: 48px 24px;">
+                <div style="font-size: 44px; margin-bottom: 12px;">🃏</div>
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">Active Recall & Spaced Repetition</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                  Test your retention with AI-generated flashcards. Click card or press Space to flip!
+                </p>
+                <button class="btn btn-primary" onclick="document.getElementById('generate-flashcards-btn').click()">
+                  ⚡ Generate Deck on Solar Photovoltaic Systems
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: LEARNING PLANNER -->
+      <section class="tab-pane" id="tab-planner">
+        <div style="display: grid; grid-template-columns: 340px 1fr; gap: 24px;">
+          <!-- Plan Configuration -->
+          <div class="card" style="height: fit-content;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🎯</span> <span>Create Study Plan</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <input type="text" id="plan-subject-input" class="form-input" value="Renewable Energy Technologies">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Target Academic Goal</label>
+              <input type="text" id="plan-goal-input" class="form-input" value="Master Core Principles & Score 90%+ in Finals">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Study Duration</label>
+              <select id="plan-days-input" class="form-select">
+                <option value="5">5 Days Crash Course</option>
+                <option value="7" selected>7 Days Intensive Plan</option>
+                <option value="14">14 Days Comprehensive Mastery</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Daily Available Study Time</label>
+              <select id="plan-hours-input" class="form-select">
+                <option value="1.0">1.0 Hour / Day</option>
+                <option value="1.5" selected>1.5 Hours / Day</option>
+                <option value="2.0">2.0 Hours / Day</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" id="generate-plan-btn" style="width: 100%; margin-top: 8px;">
+              📅 Create Learning Plan
+            </button>
+          </div>
+
+          <!-- Active Plan & Session Checklist -->
+          <div id="active-plans-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: PROGRESS & MASTERY ANALYTICS -->
+      <section class="tab-pane" id="tab-analytics">
+        <div id="analytics-dashboard-container">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 6: SETTINGS -->
+      <section class="tab-pane" id="tab-settings">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- Student Profile Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>👤</span> <span>Student Profile & Learning Goals</span>
+              </div>
+            </div>
+
+            <form id="profile-settings-form">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="setting-name" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Academic Level</label>
+                <select id="setting-level" class="form-select">
+                  <option value="High School">High School</option>
+                  <option value="Undergraduate">Undergraduate</option>
+                  <option value="Postgraduate">Postgraduate</option>
+                  <option value="Professional / Self-Learner">Professional / Self-Learner</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Primary Study Goal</label>
+                <input type="text" id="setting-goal" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Preferred Learning Style</label>
+                <select id="setting-style" class="form-select">
+                  <option value="Socratic & Conceptual">Socratic & Conceptual</option>
+                  <option value="Practical & Application-based">Practical & Application-based</option>
+                  <option value="Visual & Analogy-driven">Visual & Analogy-driven</option>
+                  <option value="Concise & Exam-oriented">Concise & Exam-oriented</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Weekly Study Hours Target</label>
+                <input type="number" id="setting-hours" class="form-input" min="1" max="60" value="10">
+              </div>
+
+              <button type="submit" class="btn btn-primary">Save Profile Preferences</button>
+            </form>
+          </div>
+
+          <!-- AI Engine & Provider Config -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🤖</span> <span>AI Engine & API Configuration</span>
+              </div>
+            </div>
+
+            <form id="ai-settings-form">
+              <div class="form-group">
+                <label class="form-label">LLM Provider</label>
+                <select id="setting-llm-provider" class="form-select">
+                  <option value="builtin" selected>Built-in Pedagogical Tutor (Offline / Zero-cost)</option>
+                  <option value="gemini">Google Gemini API (Official)</option>
+                  <option value="openai">OpenAI / OpenAI-Compatible Endpoint</option>
+                </select>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+                  The built-in tutor runs instantly with full RAG document grounding, quiz generation, and memory. Switch to Gemini anytime by providing an API key.
+                </p>
+              </div>
+
+              <div class="form-group" id="gemini-key-group" style="display: none;">
+                <label class="form-label">Google Gemini API Key</label>
+                <input type="password" id="setting-gemini-key" class="form-input" placeholder="AIzaSy...">
+              </div>
+
+              <div class="form-group" id="openai-key-group" style="display: none;">
+                <label class="form-label">OpenAI API Key</label>
+                <input type="password" id="setting-openai-key" class="form-input" placeholder="sk-...">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Model Name</label>
+                <input type="text" id="setting-model-name" class="form-input" value="gemini-1.5-flash">
+              </div>
+
+              <button type="submit" class="btn btn-primary">Update AI Configuration</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Citation Modal -->
+  <div class="modal-backdrop" id="citation-modal">
+    <div class="modal-dialog">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 16px; font-weight: 700;">Source Document Verification</h3>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('citation-modal').classList.remove('show')">✕</button>
+      </div>
+      <div id="citation-modal-body">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Chunks Explorer Modal -->
+  <div class="modal-backdrop" id="chunks-modal">
+    <div class="modal-dialog" style="max-width: 750px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 16px; font-weight: 700;" id="chunks-modal-title">Course Document Chunks</h3>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chunks-modal').classList.remove('show')">✕</button>
+      </div>
+      <div id="chunks-modal-body">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Cheatsheet Modal -->
+  <div class="modal-backdrop" id="cheatsheet-modal">
+    <div class="modal-dialog" style="max-width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 16px; font-weight: 700;" id="cheatsheet-modal-title">⚡ AI Study Cheatsheet</h3>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('cheatsheet-modal').classList.remove('show')">✕</button>
+      </div>
+      <div id="cheatsheet-modal-body">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/timer.js"></script>
+  <script src="/static/js/chat.js"></script>
+  <script src="/static/js/materials.js"></script>
+  <script src="/static/js/quiz.js"></script>
+  <script src="/static/js/flashcards.js"></script>
+  <script src="/static/js/planner.js"></script>
+  <script src="/static/js/analytics.js"></script>
+  <script src="/static/js/settings.js"></script>
+</body>
+</html>

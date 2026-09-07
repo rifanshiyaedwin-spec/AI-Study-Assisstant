@@ -1,0 +1,63 @@
+# CHAPTER 1: Fundamentals of Renewable Energy and Solar Radiation
+
+Renewable energy sources are replenished naturally over short timescales and generate clean energy without direct greenhouse gas emissions. Among renewable technologies, solar energy represents one of the largest and most accessible resources on Earth. Solar irradiance is the power per unit area received from the Sun in the form of electromagnetic radiation, typically measured in watts per square meter (W/m²). At the Earth's upper atmosphere, the solar constant is approximately 1361 W/m². When solar radiation travels through the atmosphere, it undergoes scattering and absorption, resulting in direct beam radiation and diffuse radiation. The global horizontal irradiance (GHI) is the total amount of shortwave radiation received from above by a surface horizontal to the ground, given by GHI = DNI * cos(theta) + DHI, where DNI is direct normal irradiance, theta is solar zenith angle, and DHI is diffuse horizontal irradiance.
+
+# CHAPTER 2: Working Principles of Solar Photovoltaic (PV) Systems
+
+A solar photovoltaic system converts solar photon energy directly into direct current (DC) electricity via the photovoltaic effect occurring in semiconductor materials.
+
+### 2.1 The Photovoltaic Effect and Semiconductor Physics
+Solar cells are fundamentally large p-n junction diodes manufactured primarily from crystalline silicon. Silicon has 4 valence electrons. When doped with phosphorus (5 valence electrons), it forms an n-type semiconductor with excess conduction electrons. When doped with boron (3 valence electrons), it creates a p-type semiconductor with excess holes. At the metallurgical junction between p and n regions, mobile electrons and holes recombine, establishing a permanent depletion region with a built-in electrostatic field.
+
+When incident solar photons with energy (E = h*nu) greater than the silicon bandgap (approximately 1.12 eV at 300 K) strike the cell, they are absorbed and liberate electron-hole pairs. The built-in electric field in the depletion zone sweeps electrons toward the n-side contact and holes toward the p-side contact. When an external electrical load is connected across the terminals, electric current flows through the circuit, producing electrical power: P = V * I.
+
+### 2.2 Solar Photovoltaic Cell to Array Hierarchy
+1. Solar Cell: The fundamental semiconductor unit, typically generating around 0.5 to 0.6 Volts DC under standard test conditions (STC: 1000 W/m², 25°C cell temperature, AM 1.5 spectrum).
+2. PV Module: Multiple solar cells (commonly 60, 72, or 144 half-cut cells) connected in series and encapsulated in ethylene-vinyl acetate (EVA) with a tempered glass front and Tedlar backsheet to protect against environmental degradation. Connecting cells in series increases voltage (e.g., 36V to 48V open-circuit voltage).
+3. PV String: Multiple PV modules connected in series to achieve the high input voltage required by grid-tied or off-grid inverters (typically 300V to 1000V DC).
+4. PV Array: Multiple PV strings connected in parallel through a combiner box with bypass and blocking diodes to scale up the total output current and overall system wattage.
+
+# CHAPTER 3: Balance of System (BOS) Components
+
+A complete solar photovoltaic installation requires Balance of System (BOS) equipment to condition power, protect circuitry, and interface with electrical loads.
+
+### 3.1 Solar Charge Controllers
+In off-grid and battery-backed PV systems, charge controllers regulate the current and voltage delivered from the solar array to the battery bank, preventing overcharging and deep discharge.
+1. PWM (Pulse Width Modulation) Controllers: These act as electronic switches between the PV array and the battery. They force the PV array to operate at the battery's nominal voltage, which causes significant efficiency losses when panel voltage is higher than battery voltage.
+2. MPPT (Maximum Power Point Tracking) Controllers: Modern electronic DC-to-DC converters that continuously track the array's IV curve to find the maximum power point (Vmp, Imp). MPPT algorithms (such as Perturb and Observe or Incremental Conductance) dynamically adjust the duty cycle, converting surplus panel voltage into extra charging current. MPPT controllers improve energy harvest by 20% to 35% compared to PWM controllers, especially in cold or cloudy conditions.
+
+### 3.2 Power Inverters
+PV modules generate direct current (DC), whereas household appliances and the electrical grid utilize alternating current (AC). The inverter is the central power electronics device responsible for:
+1. DC to AC Conversion: Utilizing insulated-gate bipolar transistors (IGBTs) or MOSFETs in an H-bridge configuration with Pulse Width Modulation to synthesize a low-distortion Pure Sine Wave AC output (typically 120V or 230V at 50Hz/60Hz).
+2. MPPT Tracking: Built-in multi-channel MPPT trackers maximize output from strings with differing orientations or shading profiles.
+3. Grid Synchronization & Anti-Islanding Protection: Grid-tied inverters must precisely match the utility grid's frequency, phase angle, and voltage. Under IEEE 1547 and UL 1741 standards, an inverter must shut down within milliseconds if the grid fails (anti-islanding) to protect line maintenance workers.
+4. Central vs. String vs. Microinverters: String inverters handle multiple panels in series; microinverters attach to individual modules to eliminate single-point-of-failure issues and shade mismatch losses.
+
+### 3.3 Battery Storage Technologies
+To provide power during nighttime or overcast periods, solar systems employ electrochemical battery storage:
+1. Lead-Acid Batteries (AGM / Gel): Traditional, lower initial capital cost, but limited depth of discharge (DoD recommended 50%) and shorter cycle life (500 to 1200 cycles).
+2. Lithium-Iron-Phosphate (LiFePO4 / LFP): High energy density, deep discharge tolerance (up to 80%-90% DoD), exceptional cycle life (4000 to 7000 cycles), superior thermal stability, and integrated Battery Management Systems (BMS) for cell voltage balancing.
+
+# CHAPTER 4: Wind Energy Systems and Aerodynamics
+
+Wind turbines harvest kinetic energy from moving air masses and convert it into mechanical torque, which drives an electrical generator.
+
+### 4.1 Wind Power Equation and Betz Limit
+The kinetic power contained in an air stream of density rho (approximately 1.225 kg/m³ at sea level) flowing with velocity v through rotor swept area A is given by:
+P_wind = 0.5 * rho * A * v^3.
+Notice that wind power scales with the cube of wind velocity. Doubling wind speed increases theoretical available power by eight-fold.
+
+According to Albert Betz's law (1919), derived from conservation of mass and momentum in fluid dynamics, no wind turbine can capture more than 16/27 (59.3%) of the kinetic energy in wind. This theoretical upper bound is called the Betz Limit (maximum power coefficient Cp,max = 0.593). Practical modern wind turbine rotors operate at Cp values between 0.40 and 0.48.
+
+### 4.2 Turbine Subsystems
+1. Rotor and Blades: Aerodynamically shaped airfoils utilizing aerodynamic lift rather than drag. Pitch control mechanisms rotate blades along their longitudinal axis to optimize angle of attack and regulate power in high winds.
+2. Nacelle: Houses the low-speed shaft, mechanical gearbox (stepping up shaft speed from 10-20 RPM to 1500-1800 RPM), high-speed shaft, mechanical brake, and electrical generator (Doubly-Fed Induction Generator - DFIG or Permanent Magnet Synchronous Generator - PMSG).
+3. Yaw Mechanism: Rotates the entire nacelle atop the tower to keep the rotor facing directly into the wind vector.
+
+# CHAPTER 5: System Sizing, Economics, and Environmental Impact
+
+Proper sizing of a solar photovoltaic installation involves:
+1. Load Calculation: Daily watt-hour consumption (kWh/day) accounting for appliance power ratings and operating duty cycles.
+2. Peak Sun Hours (PSH): The equivalent number of hours per day when solar irradiance averages 1000 W/m². A location receiving 5 kWh/m²/day receives 5 PSH.
+3. Derating Factors: Total system losses due to module temperature coefficient (silicon power drops ~0.4% per °C above 25°C), inverter efficiency (typically 96-98%), wiring resistive losses, dirt and soiling (2-5%), and orientation mismatch.
+4. Levelized Cost of Electricity (LCOE): The net present value of total lifetime capital, operational, and maintenance costs divided by total lifetime electricity generated ($/kWh). Solar PV and onshore wind currently provide some of the lowest unsubsidized LCOE metrics in modern global energy markets.
